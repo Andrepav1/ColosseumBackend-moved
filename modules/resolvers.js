@@ -15,8 +15,35 @@ const resolvers = {
       let { results } = await moviedb.moviePopular().catch(console.error)
       return results;
     }, 
+    movieTopRated: async () => {
+      let { results } = await moviedb.movieTopRated().catch(console.error)
+      return results;
+    }, 
+    movieNowPlaying: async () => {
+      let { results } = await moviedb.movieNowPlaying().catch(console.error)
+      return results;
+    }, 
+    movieRecommendations: async (_,{id}) => {
+      let { results } = await moviedb.movieRecommendations({ id: id }).catch(console.error)
+      return results;
+    }, 
+    movieVideos: async (_,{id}) => {
+      let { results } = await moviedb.movieVideos({ id: id }).catch(console.error)
+      return results;
+    }, 
+    discoverMovie: async (_,{params}) => {
+      console.log(params);
+      
+      let { results } = await moviedb.discoverMovie(params).catch(console.error)
+      return results;
+    },
+    movieImages:async (_,{id}) => {
+      let { backdrops, posters } = await moviedb.movieImages({ id: id }).catch(console.error)
+      return { backdrops, posters };
+    },
   }
 };
+
 
 // ALL AVAILABLE METHODS:
 // configuration
@@ -29,7 +56,6 @@ const resolvers = {
 // searchCompany
 // searchCollection
 // searchKeyword
-//                            searchMovie
 // searchMulti
 // searchPerson
 // searchTv
@@ -37,30 +63,21 @@ const resolvers = {
 // collectionInfo
 // collectionImages
 // collectionTranslations
-// discoverMovie
 // discoverTv
 // trending
-//                            movieInfo
 // movieAccountStates
 // movieAlternativeTitles
 // movieChanges
 // movieCredits
 // movieExternalIds
-// movieImages
 // movieKeywords
 // movieReleaseDates
-// movieVideos
 // movieTranslations
-// movieRecommendations
 // movieSimilar
 // movieReviews
 // movieLists
 // movieRatingUpdate
 // movieRatingDelete
-// movieLatest
-// movieNowPlaying
-// moviePopular
-// movieTopRated
 // upcomingMovies
 // tvInfo
 // tvAccountStates
