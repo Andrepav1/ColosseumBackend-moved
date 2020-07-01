@@ -8,8 +8,8 @@ const resolvers = {
       return results;
     },
     movieInfo: async (_,{id}) => {
-      let result = await moviedb.movieInfo({ id: id }).catch(console.error)
-      return result;
+      let movie = await moviedb.movieInfo({ id: id }).catch(console.error)
+      return movie;
     }, 
     moviePopular: async () => {
       let { results } = await moviedb.moviePopular().catch(console.error)
@@ -32,18 +32,38 @@ const resolvers = {
       return results;
     }, 
     discoverMovie: async (_,{params}) => {
-      console.log(params);
-      
       let { results } = await moviedb.discoverMovie(params).catch(console.error)
       return results;
     },
-    movieImages:async (_,{id}) => {
+    movieImages: async (_,{id}) => {
       let { backdrops, posters } = await moviedb.movieImages({ id: id }).catch(console.error)
       return { backdrops, posters };
     },
+    movieSimilar: async (_,{id}) => {
+      let { results } = await moviedb.movieSimilar({ id: id }).catch(console.error)
+      return results;
+    },
+    movieKeywords: async (_,{id}) => {
+      let { keywords } = await moviedb.movieKeywords({ id: id }).catch(console.error)
+      return keywords;
+    },
+    movieCredits: async (_,{id}) => {
+      let { crew, cast } = await moviedb.movieCredits({ id: id }).catch(console.error)
+      return { crew, cast };
+    },
+    personInfo: async (_,{id}) => {
+      let person = await moviedb.personInfo({ id: id }).catch(console.error)
+      return person;
+    },
+    personMovieCredits: async (_,{id}) => {
+      let { crew, cast } = await moviedb.personMovieCredits({ id: id }).catch(console.error)
+      console.log(cast);
+      console.log(crew);
+      
+      return { crew, cast };
+    },
   }
 };
-
 
 // ALL AVAILABLE METHODS:
 // configuration
