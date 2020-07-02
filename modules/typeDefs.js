@@ -16,6 +16,7 @@ type Query{
   movieCredits(id: ID!): MovieCreditsResponse
   personInfo(id: ID!): PersonDetail
   personMovieCredits(id: ID!): PersonMovieCreditsResponse
+  personImages(id: ID!): [Image]
 }
 type MovieBasic {
   id: ID!

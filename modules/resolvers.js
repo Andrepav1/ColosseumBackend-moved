@@ -56,11 +56,12 @@ const resolvers = {
       return person;
     },
     personMovieCredits: async (_,{id}) => {
-      let { crew, cast } = await moviedb.personMovieCredits({ id: id }).catch(console.error)
-      console.log(cast);
-      console.log(crew);
-      
+      let { crew, cast } = await moviedb.personMovieCredits({ id: id }).catch(console.error)      
       return { crew, cast };
+    },
+    personImages: async (_,{id}) => {
+      let { profiles } = await moviedb.personImages({ id: id }).catch(console.error)      
+      return profiles;
     },
   }
 };
