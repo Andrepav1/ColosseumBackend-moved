@@ -3,9 +3,9 @@ const moviedb = new MovieDb('c781a3dabef946805a961db3b7b916eb')
 
 const resolvers = {
   Query: {
-    searchMovie: async (_,{name}) => {
-      let { results } = await moviedb.searchMovie({ query: name }).catch(console.error)
-      return results;
+    searchMovie: async (_,{params}) => {
+      let response = await moviedb.searchMovie(params).catch(console.error)
+      return response;
     },
     movieInfo: async (_,{id}) => {
       let movie = await moviedb.movieInfo({ id: id }).catch(console.error)
@@ -32,8 +32,8 @@ const resolvers = {
       return results;
     }, 
     discoverMovie: async (_,{params}) => {
-      let { results } = await moviedb.discoverMovie(params).catch(console.error)
-      return results;
+      let response = await moviedb.discoverMovie(params).catch(console.error)
+      return response;
     },
     movieImages: async (_,{id}) => {
       let { backdrops, posters } = await moviedb.movieImages({ id: id }).catch(console.error)

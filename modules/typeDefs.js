@@ -2,14 +2,14 @@ const { gql } = require('apollo-server-express');
 
 const movieTypeDefs = gql`
 type Query{
-  searchMovie( name: String!): [MovieBasic]
+  searchMovie( params: SearchMovieParameters!): SearchMovieResponse
   movieInfo( id: ID! ): MovieDetail
   moviePopular: [MovieBasic]
   movieTopRated: [MovieBasic]
   movieNowPlaying: [MovieBasic]
   movieRecommendations( id: ID! ): [MovieBasic]
   movieVideos( id: ID! ): [VideoBlurb]
-  discoverMovie(params: DiscoverMoviesParameters! ): [MovieBasic]
+  discoverMovie(params: DiscoverMoviesParameters! ): SearchMovieResponse
   movieImages(id: ID!): MovieImagesResponse
   movieSimilar(id: ID!): [MovieBasic]
   movieKeywords(id: ID!): [Keyword]
@@ -71,6 +71,19 @@ input DiscoverMoviesParameters {
   with_people: String
   with_keywords: String
   without_keywords: String
+}
+input SearchMovieParameters {
+  language: String
+  region: String
+  page: Int
+  query: String
+  year: Int
+}
+type SearchMovieResponse {
+  page: Int
+  results: [MovieBasic]
+  total_results: Int
+  total_pages: Int
 }
 type VideoBlurb{
   id : ID
