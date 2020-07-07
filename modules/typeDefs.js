@@ -71,6 +71,8 @@ input DiscoverMoviesParameters {
   with_people: String
   with_keywords: String
   without_keywords: String
+  with_original_language: String
+  year: Int
 }
 input SearchMovieParameters {
   language: String

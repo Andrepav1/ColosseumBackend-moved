@@ -32,6 +32,8 @@ const resolvers = {
       return results;
     }, 
     discoverMovie: async (_,{params}) => {
+      console.log(params);
+      
       let response = await moviedb.discoverMovie(params).catch(console.error)
       return response;
     },
