@@ -2,25 +2,60 @@ const { MovieDb } = require('moviedb-promise')
 const moviedb = new MovieDb('c781a3dabef946805a961db3b7b916eb')
 
 const resolvers = {
+  SearchMultiResult: {
+    __resolveType({media_type}){
+      switch (media_type) {
+        case 'movie': return 'MovieBasic'
+        case 'tv': return 'TVShowBasic'
+        case 'person': return 'PersonDetail'
+      }
+      return null;
+    },
+  },
+    TrendingResult: {
+    __resolveType({media_type}){
+      switch (media_type) {
+        case 'movie': return 'MovieBasic'
+        case 'tv': return 'TVShowBasic'
+      }
+      return null;
+    },
+  },
   Query: {
+    trending: async (_,{media_type, time_window}) => {
+      let response = await moviedb.trending({ media_type, time_window }).catch(console.error)
+      return response;
+    },
     searchMovie: async (_,{params}) => {
       let response = await moviedb.searchMovie(params).catch(console.error)
+      return response;
+    },
+    searchTv: async (_,{params}) => {
+      let response = await moviedb.searchTv(params).catch(console.error)
+      return response;
+    },
+    searchPerson: async (_,{params}) => {
+      let response = await moviedb.searchPerson(params).catch(console.error)
+      return response;
+    },
+    searchMulti: async (_,{params}) => {
+      let response = await moviedb.searchMulti(params).catch(console.error)
       return response;
     },
     movieInfo: async (_,{id}) => {
       let movie = await moviedb.movieInfo({ id: id }).catch(console.error)
       return movie;
     }, 
-    moviePopular: async () => {
-      let { results } = await moviedb.moviePopular().catch(console.error)
+    moviePopular: async (_,{params}) => {
+      let { results } = await moviedb.moviePopular(params).catch(console.error)
       return results;
     }, 
-    movieTopRated: async () => {
-      let { results } = await moviedb.movieTopRated().catch(console.error)
+    movieTopRated: async (_,{params}) => {
+      let { results } = await moviedb.movieTopRated(params).catch(console.error)
       return results;
     }, 
-    movieNowPlaying: async () => {
-      let { results } = await moviedb.movieNowPlaying().catch(console.error)
+    movieNowPlaying: async (_,{params}) => {
+      let { results } = await moviedb.movieNowPlaying(params).catch(console.error)
       return results;
     }, 
     movieRecommendations: async (_,{id}) => {
@@ -32,9 +67,11 @@ const resolvers = {
       return results;
     }, 
     discoverMovie: async (_,{params}) => {
-      console.log(params);
-      
       let response = await moviedb.discoverMovie(params).catch(console.error)
+      return response;
+    },
+    discoverTv: async (_,{params}) => {
+      let response = await moviedb.discoverTv(params).catch(console.error)
       return response;
     },
     movieImages: async (_,{id}) => {
@@ -65,28 +102,80 @@ const resolvers = {
       let { profiles } = await moviedb.personImages({ id: id }).catch(console.error)      
       return profiles;
     },
+    tvInfo: async (_,{tv_id}) => {
+      let tv_show = await moviedb.tvInfo({ id: tv_id }).catch(console.error)
+      return tv_show;
+    }, 
+    tvImages: async (_,{tv_id}) => {
+      let { backdrops, posters } = await moviedb.tvImages({ id: tv_id }).catch(console.error)
+      return { backdrops, posters };
+    },
+    tvKeywords: async (_,{tv_id}) => {
+      let { results } = await moviedb.tvKeywords({ id: tv_id }).catch(console.error)
+      return results;
+    },
+    tvRecommendations: async (_,{tv_id}) => {
+      let { results } = await moviedb.tvRecommendations({ id: tv_id }).catch(console.error)
+      return results;
+    }, 
+    tvSimilar: async (_,{tv_id}) => {
+      let { results } = await moviedb.tvSimilar({ id: tv_id }).catch(console.error)
+      return results;
+    },
+    tvVideos: async (_,{tv_id}) => {
+      let { results } = await moviedb.tvVideos({ id: tv_id }).catch(console.error)
+      return results;
+    }, 
+    tvPopular: async (_,{params}) => {
+      let { results } = await moviedb.tvPopular(params).catch(console.error)
+      return results;
+    }, 
+    tvTopRated: async (_,{params}) => {
+      let { results } = await moviedb.tvTopRated(params).catch(console.error)
+      return results;
+    }, 
+    tvOnTheAir: async (_,{params}) => {
+      let { results } = await moviedb.tvOnTheAir(params).catch(console.error)
+      return results;
+    }, 
+    episodeInfo: async (_,{tv_id, season_number, episode_number}) => {
+      let tv = await moviedb.episodeInfo({ id: tv_id, season_number: season_number, episode_number: episode_number }).catch(console.error)
+      return tv;
+    }, 
+    seasonInfo: async (_,{tv_id, season_number}) => {
+      let tv = await moviedb.seasonInfo({ id: tv_id, season_number: season_number }).catch(console.error)
+      return tv;
+    }, 
+    tvCredits: async (_,{tv_id}) => {
+      let { crew, cast } = await moviedb.tvCredits({ id: tv_id }).catch(console.error)
+      return { crew, cast };
+    },
   }
 };
-
 // ALL AVAILABLE METHODS:
+// tvAccountStates
+// tvAlternativeTitles
+// tvChanges
+// tvContentRatings
+// episodeGroups
+// tvExternalIds
+// tvReviews
+// tvScreenedTheatrically
+// tvTranslations
+// tvRatingUpdate
+// tvRatingDelete
+// tvLatest
+// tvAiringToday
 // configuration
 // countries
 // jobs
 // languages
 // primaryTranslations
-// timezones
 // find
-// searchCompany
-// searchCollection
-// searchKeyword
-// searchMulti
-// searchPerson
-// searchTv
 // searchList
 // collectionInfo
 // collectionImages
 // collectionTranslations
-// discoverTv
 // trending
 // movieAccountStates
 // movieAlternativeTitles
@@ -102,29 +191,6 @@ const resolvers = {
 // movieRatingUpdate
 // movieRatingDelete
 // upcomingMovies
-// tvInfo
-// tvAccountStates
-// tvAlternativeTitles
-// tvChanges
-// tvContentRatings
-// tvCredits
-// episodeGroups
-// tvExternalIds
-// tvImages
-// tvKeywords
-// tvRecommendations
-// tvReviews
-// tvScreenedTheatrically
-// tvSimilar
-// tvTranslations
-// tvVideos
-// tvRatingUpdate
-// tvRatingDelete
-// tvLatest
-// tvAiringToday
-// tvOnTheAir
-// tvPopular
-// tvTopRated
 // seasonInfo
 // seasonChanges
 // seasonAccountStates
@@ -142,13 +208,11 @@ const resolvers = {
 // episodeRatingUpdate
 // episodeRatingDelete
 // episodeVideos
-// personInfo
 // personChanges
 // personMovieCredits
 // personTvCredits
 // personCombinedCredits
 // personExternalIds
-// personImages
 // personTaggedImages
 // personTranslations
 // personLatest

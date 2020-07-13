@@ -2,21 +2,45 @@ const { gql } = require('apollo-server-express');
 
 const movieTypeDefs = gql`
 type Query{
-  searchMovie( params: SearchMovieParameters!): SearchMovieResponse
+  trending(media_type: String!, time_window: String!): TrendingResponse
+  searchMovie( params: SearchParameters!): SearchMovieResponse
+  searchTv( params: SearchParameters!): SearchTvResponse
+  searchPerson( params: SearchParameters!): SearchPersonResponse
+  searchMulti( params: SearchParameters!): SearchMultiResponse
   movieInfo( id: ID! ): MovieDetail
-  moviePopular: [MovieBasic]
-  movieTopRated: [MovieBasic]
-  movieNowPlaying: [MovieBasic]
+  moviePopular( params: BasicMovieParams ): [MovieBasic]
+  movieTopRated( params: BasicMovieParams ): [MovieBasic]
+  movieNowPlaying( params: BasicMovieParams ): [MovieBasic]
   movieRecommendations( id: ID! ): [MovieBasic]
   movieVideos( id: ID! ): [VideoBlurb]
   discoverMovie(params: DiscoverMoviesParameters! ): SearchMovieResponse
-  movieImages(id: ID!): MovieImagesResponse
+  discoverTv(params: DiscoverTvParameters! ): SearchTvResponse
+  movieImages(id: ID!): ImagesResponse
   movieSimilar(id: ID!): [MovieBasic]
   movieKeywords(id: ID!): [Keyword]
-  movieCredits(id: ID!): MovieCreditsResponse
+  movieCredits(id: ID!): CreditsResponse
   personInfo(id: ID!): PersonDetail
   personMovieCredits(id: ID!): PersonMovieCreditsResponse
   personImages(id: ID!): [Image]
+  tvInfo(tv_id: ID!): TVShowDetail
+  tvImages(tv_id: ID!): ImagesResponse
+  tvKeywords(tv_id: ID!): [Keyword]
+  tvRecommendations(tv_id: ID!): [TVShowBasic]
+  tvSimilar(tv_id: ID!): [TVShowBasic]
+  tvVideos(tv_id: ID! ): [VideoBlurb]
+  tvPopular( params: BasicTvShowParams ): [TVShowBasic]
+  tvTopRated( params: BasicTvShowParams ): [TVShowBasic]
+  tvOnTheAir( params: BasicTvShowParams ): [TVShowBasic]
+  episodeInfo(tv_id: ID!, season_number: Int!, episode_number: Int! ): EpisodeDetail
+  seasonInfo(tv_id: ID!, season_number: Int! ): SeasonDetail
+  tvCredits(tv_id: ID!): CreditsResponse
+}
+union TrendingResult = MovieBasic | TVShowBasic
+type TrendingResponse {
+  page: Int
+  results: [TrendingResult]
+  total_pages: Int
+  total_results: Int
 }
 type MovieBasic {
   id: ID!
@@ -61,6 +85,15 @@ type MovieDetail {
   vote_average : Float
   vote_count : Int
 }
+input BasicMovieParams {
+  language: String,
+  page: Int,
+  region: String
+}
+input BasicTvShowParams {
+  language: String,
+  page: Int
+}
 input DiscoverMoviesParameters {
   language: String
   region: String
@@ -74,7 +107,18 @@ input DiscoverMoviesParameters {
   with_original_language: String
   year: Int
 }
-input SearchMovieParameters {
+input DiscoverTvParameters {
+  language: String
+  region: String
+  sort_by: String
+  page: Int
+  with_genres: String
+  without_genres: String
+  with_keywords: String
+  without_keywords: String
+  with_original_language: String
+}
+input SearchParameters {
   language: String
   region: String
   page: Int
@@ -84,6 +128,25 @@ input SearchMovieParameters {
 type SearchMovieResponse {
   page: Int
   results: [MovieBasic]
+  total_results: Int
+  total_pages: Int
+}
+type SearchTvResponse {
+  page: Int
+  results: [TVShowBasic]
+  total_results: Int
+  total_pages: Int
+}
+type SearchPersonResponse {
+  page: Int
+  results: [PersonDetail]
+  total_results: Int
+  total_pages: Int
+}
+union SearchMultiResult = MovieBasic | TVShowBasic | PersonDetail
+type SearchMultiResponse {
+  page: Int
+  results: [SearchMultiResult]
   total_results: Int
   total_pages: Int
 }
@@ -105,6 +168,12 @@ type ProductionCompany{
   name : String
   id : ID
 }
+type Network {
+  name: String
+  id: ID
+  logo_path: String
+  origin_country: String
+}
 type ProductionCountry{
   iso_3166_1 : String
   name : String
@@ -115,7 +184,7 @@ type CollectionName{
   poster_path : String
   backdrop_path : String
 }
-type MovieImagesResponse {
+type ImagesResponse {
   backdrops: [Image]
   posters: [Image]
 }
@@ -136,7 +205,7 @@ type Keyword{
   id : ID
   name : String
 }
-type MovieCreditsResponse{
+type CreditsResponse{
   cast: [Cast]
   crew: [Crew]
 }
@@ -156,6 +225,13 @@ type Crew{
   gender: String
   job: Int
   id: ID
+  name: String
+  profile_path: String
+}
+type TVShowCreator{
+  id: ID
+  credit_id: Int
+  gender: String
   name: String
   profile_path: String
 }
@@ -195,7 +271,7 @@ type PersonMovieCastDetail{
   video : Boolean
   vote_average : Float
   vote_count : Int
-  genre_ids : [Int!]
+  genre_ids : [Int]
 }
 type PersonMovieCrewDetail{
   id: ID
@@ -215,6 +291,80 @@ type PersonMovieCrewDetail{
   vote_average : Float
   vote_count : Int
   genre_ids : [Int!]
+}
+type TVShowBasic{
+  poster_path: String
+  popularity: Float
+  id: ID!
+  backdrop_path: String
+  vote_average: Float
+  vote_count: Int
+  name: String
+  original_name: String
+  overview: String
+  first_air_date: String
+  origin_country: [String]
+  genre_ids: [Int]
+  original_language: String
+}
+type TVShowDetail {
+  backdrop_path: String
+  created_by: TVShowCreator
+  genres : [Genre]
+  first_air_date: String
+  episode_run_time: [Int]
+  id: ID!
+  in_production: Boolean
+  languages: [String]
+  last_air_date: String
+  name: String
+  number_of_episodes: Int
+  number_of_seasons: Int
+  origin_country: [String]
+  original_language: String
+  original_name: String
+  overview: String
+  popularity: Float
+  poster_path: String
+  production_companies : [ProductionCompany]
+  networks: [Network]
+  seasons: [SeasonBasic]
+  status: String
+  type: String
+  vote_average: Float
+  vote_count: Int
+}
+type SeasonBasic {
+  air_date: String
+  episode_count: Int
+  id: ID
+  name: String
+  overview: String
+  poster_path: String
+  season_number: Int
+}
+type SeasonDetail {
+  id: ID
+  air_date: String
+  episodes: [EpisodeDetail]
+  name: String
+  overview: String
+  poster_path: String
+  season_number: Int
+}
+type EpisodeDetail {
+  air_date: String
+  crew: [Crew]
+  guest_stars: [Cast]
+  episode_number: Int
+  name: String
+  overview: String
+  id: ID
+  production_code: String
+  season_number: Int
+  still_path: String
+  vote_average: Float
+  vote_count: Int
 }
 `
 
