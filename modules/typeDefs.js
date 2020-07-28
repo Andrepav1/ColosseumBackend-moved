@@ -2,6 +2,7 @@ const { gql } = require('apollo-server-express');
 
 const movieTypeDefs = gql`
 type Query{
+  autocompleteMultiSearch(query: String): [AutoCompleteTerm]
   trending(media_type: String!, time_window: String!): TrendingResponse
   searchMovie( params: SearchParameters!): SearchMovieResponse
   searchTv( params: SearchParameters!): SearchTvResponse
@@ -42,8 +43,13 @@ type TrendingResponse {
   total_pages: Int
   total_results: Int
 }
+type AutoCompleteTerm {
+  id: ID
+  name: String
+  media_type: String
+}
 type MovieBasic {
-  id: ID!
+  id: ID
   adult: Boolean
   backdrop_path : String
   original_language : String
@@ -65,7 +71,7 @@ type MovieDetail {
   budget : Float
   genres : [Genre]
   homepage : String
-  id: ID!
+  id: ID
   imdb_id : String
   original_language : String
   original_title : String
@@ -142,6 +148,15 @@ type SearchPersonResponse {
   results: [PersonDetail]
   total_results: Int
   total_pages: Int
+}
+extend type MovieBasic {
+  media_type: String
+}
+extend type TVShowBasic {
+  media_type: String
+}
+extend type PersonDetail {
+  media_type: String
 }
 union SearchMultiResult = MovieBasic | TVShowBasic | PersonDetail
 type SearchMultiResponse {
@@ -295,7 +310,7 @@ type PersonMovieCrewDetail{
 type TVShowBasic{
   poster_path: String
   popularity: Float
-  id: ID!
+  id: ID
   backdrop_path: String
   vote_average: Float
   vote_count: Int
@@ -313,7 +328,7 @@ type TVShowDetail {
   genres : [Genre]
   first_air_date: String
   episode_run_time: [Int]
-  id: ID!
+  id: ID
   in_production: Boolean
   languages: [String]
   last_air_date: String

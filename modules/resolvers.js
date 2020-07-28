@@ -12,7 +12,7 @@ const resolvers = {
       return null;
     },
   },
-    TrendingResult: {
+  TrendingResult: {
     __resolveType({media_type}){
       switch (media_type) {
         case 'movie': return 'MovieBasic'
@@ -22,6 +22,16 @@ const resolvers = {
     },
   },
   Query: {
+    autocompleteMultiSearch: async (_,{query}) => {
+      let { results } = await moviedb.searchMulti({ query }).catch(console.error)           
+      return results.map(({ name, title, media_type, id, release_date, first_air_date }) => {
+        switch (media_type) {
+          case "tv": return { name: name + " (" + first_air_date.substring(0,4) + ")", media_type, id }
+          case "person": return { name, media_type, id }
+          case "movie": return { name: title + " (" + release_date.substring(0,4) + ")", media_type, id }
+        }
+      });
+    },
     trending: async (_,{media_type, time_window}) => {
       let response = await moviedb.trending({ media_type, time_window }).catch(console.error)
       return response;
