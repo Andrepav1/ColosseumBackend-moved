@@ -2,7 +2,6 @@ const { gql } = require('apollo-server-express');
 
 const movieTypeDefs = gql`
 type Query{
-  autocompleteMultiSearch(query: String): [AutoCompleteTerm]
   trending(media_type: String!, time_window: String!): TrendingResponse
   searchMovie( params: SearchParameters!): SearchMovieResponse
   searchTv( params: SearchParameters!): SearchTvResponse
@@ -17,7 +16,7 @@ type Query{
   discoverMovie(params: DiscoverMoviesParameters! ): SearchMovieResponse
   discoverTv(params: DiscoverTvParameters! ): SearchTvResponse
   movieImages(id: ID!): ImagesResponse
-  movieSimilar(id: ID!): [MovieBasic]
+  movieSimilar(params: MovieSimilarParameters!): SearchMovieResponse
   movieKeywords(id: ID!): [Keyword]
   movieCredits(id: ID!): CreditsResponse
   personInfo(id: ID!): PersonDetail
@@ -27,7 +26,7 @@ type Query{
   tvImages(tv_id: ID!): ImagesResponse
   tvKeywords(tv_id: ID!): [Keyword]
   tvRecommendations(tv_id: ID!): [TVShowBasic]
-  tvSimilar(tv_id: ID!): [TVShowBasic]
+  tvSimilar(params: TvSimilarParameters!): SearchTvResponse
   tvVideos(tv_id: ID! ): [VideoBlurb]
   tvPopular( params: BasicTvShowParams ): [TVShowBasic]
   tvTopRated( params: BasicTvShowParams ): [TVShowBasic]
@@ -35,6 +34,7 @@ type Query{
   episodeInfo(tv_id: ID!, season_number: Int!, episode_number: Int! ): EpisodeDetail
   seasonInfo(tv_id: ID!, season_number: Int! ): SeasonDetail
   tvCredits(tv_id: ID!): CreditsResponse
+  personTvCredits(id: ID!): PersonTVShowCreditsResponse
 }
 union TrendingResult = MovieBasic | TVShowBasic
 type TrendingResponse {
@@ -42,11 +42,6 @@ type TrendingResponse {
   results: [TrendingResult]
   total_pages: Int
   total_results: Int
-}
-type AutoCompleteTerm {
-  id: ID
-  name: String
-  media_type: String
 }
 type MovieBasic {
   id: ID
@@ -130,6 +125,14 @@ input SearchParameters {
   page: Int
   query: String
   year: Int
+}
+input MovieSimilarParameters {
+  id: ID!
+  page: Int
+}
+input TvSimilarParameters {
+  id: ID!
+  page: Int
 }
 type SearchMovieResponse {
   page: Int
@@ -270,6 +273,51 @@ type PersonMovieCreditsResponse{
   cast: [PersonMovieCastDetail]
   crew: [PersonMovieCrewDetail]
 }
+type PersonTVShowCreditsResponse{
+  cast: [PersonTVShowCastDetail]
+  crew: [PersonTVShowCrewDetail]
+}
+type PersonTVShowCastDetail{
+  character: String
+  credit_id: String
+  id: ID
+  adult: Boolean
+  backdrop_path : String
+  original_language : String
+  original_name : String
+  origin_country : [String]
+  overview : String
+  popularity : Float
+  poster_path : String
+  first_air_date : String
+  name : String
+  video : Boolean
+  episode_count : Int 
+  vote_average : Float
+  vote_count : Int
+  genre_ids : [Int]
+}
+type PersonTVShowCrewDetail{
+  id: ID
+  department: String
+  credit_id: String
+  job: String
+  adult: Boolean
+  episode_count : Int 
+  backdrop_path : String
+  original_language : String
+  original_name : String
+  origin_country : [String]
+  overview : String
+  popularity : Float
+  poster_path : String
+  first_air_date : String
+  name : String
+  video : Boolean
+  vote_average : Float
+  vote_count : Int
+  genre_ids : [Int]
+}
 type PersonMovieCastDetail{
   character: String
   credit_id: String
@@ -305,7 +353,7 @@ type PersonMovieCrewDetail{
   video : Boolean
   vote_average : Float
   vote_count : Int
-  genre_ids : [Int!]
+  genre_ids : [Int]
 }
 type TVShowBasic{
   poster_path: String

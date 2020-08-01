@@ -22,33 +22,27 @@ const resolvers = {
     },
   },
   Query: {
-    autocompleteMultiSearch: async (_,{query}) => {
-      let { results } = await moviedb.searchMulti({ query }).catch(console.error)           
-      return results.map(({ name, title, media_type, id, release_date, first_air_date }) => {
-        switch (media_type) {
-          case "tv": return { name: name + " (" + first_air_date.substring(0,4) + ")", media_type, id }
-          case "person": return { name, media_type, id }
-          case "movie": return { name: title + " (" + release_date.substring(0,4) + ")", media_type, id }
-        }
-      });
-    },
     trending: async (_,{media_type, time_window}) => {
       let response = await moviedb.trending({ media_type, time_window }).catch(console.error)
       return response;
     },
     searchMovie: async (_,{params}) => {
+      console.log("searchMovie", params);
       let response = await moviedb.searchMovie(params).catch(console.error)
       return response;
     },
     searchTv: async (_,{params}) => {
+      console.log("searchTv", params);
       let response = await moviedb.searchTv(params).catch(console.error)
       return response;
     },
     searchPerson: async (_,{params}) => {
+      console.log("searchPerson", params);
       let response = await moviedb.searchPerson(params).catch(console.error)
       return response;
     },
     searchMulti: async (_,{params}) => {
+      console.log("searchMulti", params);
       let response = await moviedb.searchMulti(params).catch(console.error)
       return response;
     },
@@ -57,14 +51,17 @@ const resolvers = {
       return movie;
     }, 
     moviePopular: async (_,{params}) => {
+      console.log("moviePopular", params);
       let { results } = await moviedb.moviePopular(params).catch(console.error)
       return results;
     }, 
     movieTopRated: async (_,{params}) => {
+      console.log("movieTopRated", params);
       let { results } = await moviedb.movieTopRated(params).catch(console.error)
       return results;
     }, 
     movieNowPlaying: async (_,{params}) => {
+      console.log("movieNowPlaying", params);
       let { results } = await moviedb.movieNowPlaying(params).catch(console.error)
       return results;
     }, 
@@ -77,10 +74,12 @@ const resolvers = {
       return results;
     }, 
     discoverMovie: async (_,{params}) => {
+      console.log("discoverMovie", params);
       let response = await moviedb.discoverMovie(params).catch(console.error)
       return response;
     },
     discoverTv: async (_,{params}) => {
+      console.log("discoverTv", params);
       let response = await moviedb.discoverTv(params).catch(console.error)
       return response;
     },
@@ -88,9 +87,10 @@ const resolvers = {
       let { backdrops, posters } = await moviedb.movieImages({ id: id }).catch(console.error)
       return { backdrops, posters };
     },
-    movieSimilar: async (_,{id}) => {
-      let { results } = await moviedb.movieSimilar({ id: id }).catch(console.error)
-      return results;
+    movieSimilar: async (_,{params}) => {
+      console.log("movieSimilar", params);
+      let response = await moviedb.movieSimilar(params).catch(console.error)
+      return response;
     },
     movieKeywords: async (_,{id}) => {
       let { keywords } = await moviedb.movieKeywords({ id: id }).catch(console.error)
@@ -128,9 +128,10 @@ const resolvers = {
       let { results } = await moviedb.tvRecommendations({ id: tv_id }).catch(console.error)
       return results;
     }, 
-    tvSimilar: async (_,{tv_id}) => {
-      let { results } = await moviedb.tvSimilar({ id: tv_id }).catch(console.error)
-      return results;
+    tvSimilar: async (_,{params}) => {
+      console.log("tvSimilar", params);
+      let response = await moviedb.tvSimilar(params).catch(console.error)
+      return response;
     },
     tvVideos: async (_,{tv_id}) => {
       let { results } = await moviedb.tvVideos({ id: tv_id }).catch(console.error)
@@ -158,6 +159,10 @@ const resolvers = {
     }, 
     tvCredits: async (_,{tv_id}) => {
       let { crew, cast } = await moviedb.tvCredits({ id: tv_id }).catch(console.error)
+      return { crew, cast };
+    },
+    personTvCredits: async (_,{id}) => {
+      let { crew, cast } = await moviedb.personTvCredits({ id: id }).catch(console.error)
       return { crew, cast };
     },
   }
